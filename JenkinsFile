@@ -10,7 +10,11 @@ pipeline {
         registry = "mohammedbilal98/vproapp"
     }
   stages {
-
+    stage('Fetch code'){
+      steps {
+        git branch: 'main', url: 'https://github.com/mohammedbilal98/CICD_kube_docker.git'
+      }
+    }
     stage('Build'){
       steps {
         sh 'mvn clean install -DskipTests'
@@ -37,10 +41,10 @@ pipeline {
     }
     
     stage ('CODE ANALYSIS WITH CHECKSTYLE'){
-            steps {
-                sh 'mvn checkstyle:checkstyle'
-            }
-            post {
+      steps {
+            sh 'mvn checkstyle:checkstyle'
+      }
+      post {
                 success {
                     echo 'Generated Analysis Result'
                 }
