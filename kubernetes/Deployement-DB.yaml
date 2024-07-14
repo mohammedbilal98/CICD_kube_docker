@@ -5,10 +5,10 @@ metadata:
   labels:
     app: vprodb
 spec:
+  replicas: 1
   selector:
     matchLabels:
       app: vprodb
-  replicas: 1
   template:
     metadata:
       labels:
@@ -16,11 +16,14 @@ spec:
     spec:
       containers:
       - name: vprodb
-        image: imranvisualpath/8amysql-db_1:V1
+        image: mohammedbilal98/vprofiledb
         ports:
-        - name: vprodb-port
-          containerPort: 3306
+        - containerPort: 3306
         env:
-         - name: MYSQL_ROOT_PASSWORD
-           value: "vprodbpass"
-
+          - name: MYSQL_ROOT_PASSWORD
+            valueFrom: 
+              secretKeyRef:
+                name: app-secret
+                key: db-pass
+    
+    
