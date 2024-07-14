@@ -10,11 +10,7 @@ pipeline {
         registry = "mohammedbilal98/vproapp"
     }
   stages {
-    stage('Fetch code'){
-      steps {
-        git branch: 'main', url: 'https://github.com/mohammedbilal98/CICD_kube_docker.git'
-      }
-    }
+    
     stage('Build'){
       steps {
         sh 'mvn clean install -DskipTests'
@@ -51,12 +47,33 @@ pipeline {
             }
         }
 
-               
+    stage('Building image') {
+            steps{
+              script {
+                dockerImage = docker.build registry + ":$BUILD_NUMBER"
+              }
+            }
+        }
+        
+    stage('Deploy Image') {
+          steps{
+            script {
+              docker.withRegistry( '', registryCredential ) {
+                dockerImage.push("$BUILD_NUMBER")
+                dockerImage.push('latest')
+              }
+            }
+          }
+        }
+
+    stage('Remove Unused docker image') {
+          steps{
+            sh "docker rmi $registry:$BUILD_NUMBER"
+          }
+        }
 
 
-   
-
-    
+      
       
 
   }
