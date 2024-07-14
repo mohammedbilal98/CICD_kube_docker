@@ -1,0 +1,59 @@
+pipeline {
+    agent any
+    tools {
+	    maven "MAVEN3"
+	    jdk "OracleJDK11"
+	}
+
+    environment {
+        registryCredential = 'dockerhub'
+        registry = "mohammedbilal98/vproapp"
+    }
+  stages {
+
+    stage('Build'){
+      steps {
+        sh 'mvn clean install -DskipTests'
+      }
+      post {
+          success {
+              echo 'Archiving....'
+              archiveArtifacts artifacts: '**/target/*.war'
+          }
+      }
+    }
+
+
+    stage('Unit Test'){
+      steps {
+        sh 'mvn test'
+      }
+    }
+   
+    stage('Integration Test'){
+      steps {
+        sh 'mvn verify -DskipUnitTests'
+      }
+    }
+    
+    stage ('CODE ANALYSIS WITH CHECKSTYLE'){
+            steps {
+                sh 'mvn checkstyle:checkstyle'
+            }
+            post {
+                success {
+                    echo 'Generated Analysis Result'
+                }
+            }
+        }
+
+               
+
+
+   
+
+    
+      
+
+  }
+}
